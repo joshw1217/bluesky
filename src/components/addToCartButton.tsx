@@ -18,6 +18,7 @@ export default function AddToCartButton({ id, name, price }: Props) {
           id,
           name,
           quantity: 1,
+          price,
         })
       }
       className="mt-4 px-4 py-2 bg-pink-600 text-white text-sm rounded hover:bg-pink-700 transition-colors"

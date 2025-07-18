@@ -22,7 +22,7 @@ export default async function ShopPage() {
   }
 
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-[url('/background.jpg')] bg-cover bg-center">
+    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-[url('/shop-background.jpg')] bg-cover bg-center">
       <h1 className="text-3xl font-bold mb-6 text-white">Shop</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
