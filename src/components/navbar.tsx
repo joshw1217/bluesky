@@ -1,17 +1,38 @@
-'use client'; // If you're using Next.js App Router (13+)
+'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ShoppingCart } from 'lucide-react'; // optional icons
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const { getItemCount } = useCart();
   const cartItemCount = getItemCount();
+
+  useEffect(() => { // This currently doesn't add the admin link unless the page is refreshed, TODO
+    const fetchUser = async () => {
+      const res = await fetch('/api/user-session')
+      if(res.ok){
+        const data = await res.json();
+        if(data.user === null){
+          setIsAdmin(false)
+        }
+        else {
+          setIsAdmin(data.user.user.user_metadata.admin)
+        }
+      } 
+      else { 
+        setIsAdmin(false)
+      }
+    }
+    fetchUser();
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -19,6 +40,10 @@ const [menuOpen, setMenuOpen] = useState(false);
     { href: '/about', label: 'About' },
     { href: '/account', label: 'Account' },
   ];
+
+  if (isAdmin) {
+    navLinks.push({ href: '/admin', label: 'Admin' });
+  }
 
   return (
     <header className="bg-slate-700 shadow-md sticky top-0 z-50">

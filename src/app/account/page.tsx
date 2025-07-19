@@ -4,7 +4,7 @@ import { LogoutButton } from '@/components/logoutButton';
 
 
 export default async function AccountPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

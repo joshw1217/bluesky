@@ -12,7 +12,7 @@ type Product = {
 };
 
 export default async function ShopPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: products, error } = await supabase.from('products').select('*');
 
   if (error) {
