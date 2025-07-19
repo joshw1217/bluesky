@@ -1,4 +1,3 @@
-// app/shop/page.tsx
 import AddToCartButton from '@/components/addToCartButton';
 import { createServerSupabase } from '@/lib/supabaseServer';
 import Image from 'next/image';
@@ -44,9 +43,6 @@ export default async function ShopPage() {
               <h2 className="text-xl font-semibold text-gray-900">
                 {product.name}
               </h2>
-              <p className="text-sm text-gray-600 mb-2">
-                {product.description}
-              </p>
               <p className="text-lg font-bold text-pink-600">
                 ${product.price.toFixed(2)}
               </p>
