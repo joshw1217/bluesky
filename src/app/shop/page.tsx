@@ -1,5 +1,5 @@
 import AddToCartButton from '@/components/addToCartButton';
-import { createServerSupabase } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ type Product = {
 };
 
 export default async function ShopPage() {
-  const supabase = createServerSupabase();
+  const supabase = createSupabaseServerClient();
   const { data: products, error } = await supabase.from('products').select('*');
 
   if (error) {
