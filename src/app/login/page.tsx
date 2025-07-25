@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/navbar';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function LoginPage() {
   }
 
   return (
+    <div>
+      <Navbar />
     <div className="w-screen h-screen mx-auto p-6 bg-white rounded shadow bg-[url('/background.jpg')] bg-cover bg-center flex flex-col items-center justify-center">
       <h2 className="text-xl font-bold mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
@@ -52,6 +55,7 @@ export default function LoginPage() {
           Log In
         </button>
       </form>
+    </div>
     </div>
   );
 }

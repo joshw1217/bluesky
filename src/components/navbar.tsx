@@ -15,7 +15,7 @@ const Navbar = () => {
   const { getItemCount } = useCart();
   const cartItemCount = getItemCount();
 
-  useEffect(() => { // This currently doesn't add the admin link unless the page is refreshed, TODO
+  useEffect(() => { 
     const fetchUser = async () => {
       const res = await fetch('/api/user-session')
       if(res.ok){
