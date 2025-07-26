@@ -24,7 +24,7 @@ create table products (
   manufacturer_id text,
   upc numeric,
   image_url text,
-  tags text[],
+  tags text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
