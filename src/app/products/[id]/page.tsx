@@ -1,7 +1,14 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { notFound } from 'next/navigation';
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
+
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
   const { data: product, error } = await supabase
