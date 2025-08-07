@@ -3,9 +3,7 @@ import { notFound } from 'next/navigation';
 
 
 type PageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export default async function ProductPage({ params }: PageProps) {
@@ -21,7 +19,6 @@ export default async function ProductPage({ params }: PageProps) {
     notFound();
   }
 
-  console.log(product)
   return (
     // TODO: Add more product details
     <div className="p-6 max-w-3xl mx-auto">
