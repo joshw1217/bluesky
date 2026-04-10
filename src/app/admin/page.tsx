@@ -28,9 +28,9 @@ export default function CreateUserForm() {
   }
 
   return (
-    <div> 
+    <div className="flex min-h-dvh flex-col">
       <Navbar />
-      <div className="w-screen h-screen mx-auto p-6 text-white bg-[url('/background.jpg')] bg-cover bg-center">
+      <div className="mx-auto w-full min-h-0 flex-1 p-6 text-white bg-[url('/background.jpg')] bg-cover bg-center">
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <h2 className="text-xl font-bold">Create New User</h2>
           <div className="flex flex-col gap-2">

@@ -23,10 +23,10 @@ export default async function ShopPage() {
   }
 
   return (
-    <div>
+    <div className="flex min-h-dvh flex-col">
       <Navbar />
 
-      <div className="font-sans flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-[url('/shop-background.jpg')] bg-cover bg-center">
+      <div className="font-sans flex min-h-0 flex-1 flex-col items-center justify-items-center p-8 pb-20 gap-16 sm:p-20 bg-[url('/shop-background.jpg')] bg-cover bg-center">
         <SearchBar />
         <h1 className="text-3xl font-bold mb-6 text-white">Shop</h1>
 
@@ -58,7 +58,7 @@ export default async function ShopPage() {
                       price={product.price}
                   />
                 <Link
-                  href={`/product/${product.id}`}
+                  href={`/products/${product.id}`}
                   className="inline-block mt-3 ml-2 text-sm text-pink-600 hover:underline"
                 >
                   View Details

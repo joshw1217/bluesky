@@ -9,9 +9,9 @@ export default function CartPage() {
   const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
   return (
-    <div> 
+    <div className="flex min-h-dvh flex-col">
       <Navbar />
-      <div className="w-screen h-screen mx-auto p-6 text-white bg-[url('/cart-background.jpg')] bg-cover bg-center">
+      <div className="mx-auto w-full min-h-0 flex-1 p-6 text-white bg-[url('/cart-background.jpg')] bg-cover bg-center">
         <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
         {items.length === 0 ? (

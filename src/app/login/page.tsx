@@ -29,33 +29,33 @@ export default function LoginPage() {
   }
 
   return (
-    <div>
+    <div className="flex min-h-dvh flex-col">
       <Navbar />
-    <div className="w-screen h-screen mx-auto p-6 bg-white rounded shadow bg-[url('/background.jpg')] bg-cover bg-center flex flex-col items-center justify-center">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="..."
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="..."
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 mt-2">
-          Log In
-        </button>
-      </form>
-    </div>
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col items-center justify-center bg-white bg-[url('/background.jpg')] bg-cover bg-center p-6 shadow">
+        <h2 className="text-xl font-bold mb-4">Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="..."
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="..."
+          />
+          {error && <p className="text-red-500">{error}</p>}
+          <button type="submit" className="bg-blue-600 text-white px-4 py-2 mt-2">
+            Log In
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
