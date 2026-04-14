@@ -1,11 +1,25 @@
+import ProductAddToCartRow from '@/components/productAddToCartRow';
 import Navbar from '@/components/navbar';
 import ProductHeroImage from '@/components/productHeroImage';
+import { buildShopUrl } from '@/lib/shopUrl';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ shopPage?: string; prefix?: string }>;
 };
+
+function hrefForShopReturn(shopPage: string | undefined, shopPrefix: string | undefined) {
+  const raw = shopPage === undefined || shopPage === '' ? undefined : parseInt(shopPage, 10);
+  const page =
+    raw !== undefined && Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : undefined;
+  return buildShopUrl({
+    prefix: shopPrefix || undefined,
+    page: page !== undefined && page > 1 ? page : undefined,
+  });
+}
 
 type ProductRow = {
   id: string;
@@ -26,8 +40,15 @@ function formatUpc(upc: number | string | null) {
   return String(upc);
 }
 
-export default async function ProductPage({ params }: PageProps) {
-  const { id } = await params;
+function toCartPrice(price: number | string): number {
+  const n = typeof price === 'string' ? Number(price) : price;
+  return Number.isFinite(n) ? n : 0;
+}
+
+export default async function ProductPage({ params, searchParams }: PageProps) {
+  const [{ id }, sp] = await Promise.all([params, searchParams]);
+  const shopPrefix = typeof sp.prefix === 'string' ? sp.prefix : undefined;
+  const backToShopHref = hrefForShopReturn(sp.shopPage, shopPrefix);
   const supabase = await createSupabaseServerClient();
   const { data: product, error } = await supabase
     .from('products')
@@ -40,13 +61,23 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   const p = product as ProductRow;
+  const cartPrice = toCartPrice(p.price);
 
   return (
     <div className="flex min-h-dvh flex-col">
       <Navbar />
 
       <div className="font-sans flex min-h-0 flex-1 flex-col bg-[url('/shop-background.jpg')] bg-cover bg-center">
-        <section className="flex flex-1 flex-col items-center justify-center px-6 py-10 sm:py-14">
+        <div className="flex w-full shrink-0 justify-start px-4 pt-4 sm:px-6 sm:pt-5">
+          <Link
+            href={backToShopHref}
+            className="text-sm font-medium text-white/90 underline-offset-4 transition-colors hover:text-pink-300 hover:underline"
+          >
+            ← Back to shop
+          </Link>
+        </div>
+
+        <section className="flex flex-1 flex-col items-center justify-center px-6 pb-10 pt-4 sm:pb-14 sm:pt-6">
           <ProductHeroImage
             imageUrl={p.image_url}
             productId={p.id}
@@ -65,19 +96,28 @@ export default async function ProductPage({ params }: PageProps) {
               </p>
             </div>
 
-            <div className="mt-4 flex flex-col gap-1 text-sm text-white/70 sm:flex-row sm:gap-8 sm:text-base">
-              <p>
-                <span className="text-white/50">Manufacturer ID</span>{' '}
-                <span className="font-mono text-white/85">
-                  {p.manufacturer_id ?? '—'}
-                </span>
-              </p>
-              <p>
-                <span className="text-white/50">UPC</span>{' '}
-                <span className="font-mono text-white/85">
-                  {formatUpc(p.upc)}
-                </span>
-              </p>
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+              <div className="flex flex-col gap-1 text-sm text-white/70 sm:flex-row sm:gap-8 sm:text-base">
+                <p>
+                  <span className="text-white/50">Manufacturer ID</span>{' '}
+                  <span className="font-mono text-white/85">
+                    {p.manufacturer_id ?? '—'}
+                  </span>
+                </p>
+                <p>
+                  <span className="text-white/50">UPC</span>{' '}
+                  <span className="font-mono text-white/85">
+                    {formatUpc(p.upc)}
+                  </span>
+                </p>
+              </div>
+              <div className="flex shrink-0 justify-end">
+                <ProductAddToCartRow
+                  id={p.id}
+                  name={p.name}
+                  price={cartPrice}
+                />
+              </div>
             </div>
           </div>
         </section>

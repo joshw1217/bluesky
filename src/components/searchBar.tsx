@@ -51,8 +51,8 @@ export default function SearchBar() {
                 onClick={() => handleSelect(item)}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-100"
               >
-                <div className="font-medium">{item.name}</div>
                 <div className="text-sm text-gray-500">{item.id}</div>
+                <div className="font-medium">{item.name}</div>  
               </li>
             ))
           ) : (
