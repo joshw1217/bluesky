@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     email_confirm: true,
     user_metadata: {
       name,
+    },
+    app_metadata: {
       admin,
     },
   })

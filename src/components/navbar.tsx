@@ -23,7 +23,7 @@ const Navbar = () => {
           setIsAdmin(false)
         }
         else {
-          setIsAdmin(data.user.user.user_metadata.admin)
+          setIsAdmin(data.user.user.app_metadata.admin)
         }
       } 
       else { 
