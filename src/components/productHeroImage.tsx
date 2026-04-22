@@ -1,21 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { resolveProductImageSrc } from '@/lib/productImageUrl';
+import { useEffect, useState } from 'react';
 
 type ProductHeroImageProps = {
   imageUrl: string | null | undefined;
+  /** Typically `products.updated_at` so the URL changes when the image at a fixed storage key is replaced. */
+  imageVersion?: string | number | null;
   productId: string;
   alt: string;
 };
 
 export default function ProductHeroImage({
   imageUrl,
+  imageVersion,
   productId,
   alt,
 }: ProductHeroImageProps) {
   const [failed, setFailed] = useState(false);
   const trimmed = imageUrl?.trim() ?? '';
-  const resolvedUrl = trimmed.length > 0 ? trimmed : null;
+  const resolvedUrl =
+    trimmed.length > 0 ? resolveProductImageSrc(trimmed, imageVersion ?? undefined) : null;
+
+  useEffect(() => {
+    setFailed(false);
+  }, [imageUrl, imageVersion]);
+
   const showPlaceholder = !resolvedUrl || failed;
 
   return (

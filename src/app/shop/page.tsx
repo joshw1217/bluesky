@@ -2,6 +2,7 @@ import ProductAddToCartRow from '@/components/productAddToCartRow';
 import Navbar from '@/components/navbar';
 import SearchBar from '@/components/searchBar';
 import ShopPagination from '@/components/shopPagination';
+import { resolveProductImageSrc } from '@/lib/productImageUrl';
 import { buildShopUrl } from '@/lib/shopUrl';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import Image from 'next/image';
@@ -31,6 +32,7 @@ type Product = {
   description: string | null;
   image_url: string | null;
   price: number;
+  updated_at?: string;
 };
 
 type PageProps = {
@@ -177,20 +179,22 @@ export default async function ShopPage({ searchParams }: PageProps) {
         )}
 
         <div className="grid w-full max-w-screen-2xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-          {products.map((product: Product) => (
+          {products.map((product: Product) => {
+            const imageSrc = resolveProductImageSrc(product.image_url, product.updated_at);
+            return (
             <div
               key={product.id}
               className="bg-white rounded-xl shadow-md overflow-hidden"
             >
-              {product.image_url && (
+              {imageSrc ? (
                 <Image
-                  src={product.image_url}
+                  src={imageSrc}
                   alt={product.name}
                   width={400}
                   height={300}
                   className="w-full h-64 object-cover"
                 />
-              )}
+              ) : null}
               <div className="p-4">
                 <div className="flex min-w-0 flex-row items-baseline justify-between gap-x-2 gap-y-1">
                   <p className="shrink-0 whitespace-nowrap text-sm text-gray-500">
@@ -220,7 +224,8 @@ export default async function ShopPage({ searchParams }: PageProps) {
                 />
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <ShopPagination page={page} totalPages={totalPages} prefix={selectedPrefix} />

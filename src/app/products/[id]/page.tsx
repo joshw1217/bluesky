@@ -31,6 +31,7 @@ type ProductRow = {
   manufacturer_id: string | null;
   upc: number | string | null;
   image_url: string | null;
+  updated_at?: string;
 };
 
 function formatPrice(price: number | string) {
@@ -85,15 +86,18 @@ export default async function ProductPage({ params, searchParams }: PageProps) {
             <div className="flex min-h-0 items-center justify-center rounded-2xl bg-black/25 p-4 backdrop-blur-sm">
               <ProductHeroImage
                 imageUrl={p.image_url}
+                imageVersion={p.updated_at}
                 productId={p.id}
                 alt={p.name}
               />
             </div>
 
-            <div className="min-h-0 rounded-2xl border border-white/15 bg-black/45 p-5 text-white/90 backdrop-blur-sm sm:p-6 lg:max-h-[60vh]">
-              <h2 className="mb-4 text-lg font-semibold text-white sm:text-xl">Description</h2>
-              <div className="h-full overflow-y-auto pr-1">
-                <div className="space-y-3 text-sm leading-6 text-white/85 sm:text-base">
+            <div className="flex min-h-0 flex-col rounded-2xl border border-white/15 bg-black/45 p-5 text-white/90 backdrop-blur-sm sm:p-6 lg:max-h-[60vh]">
+              <h2 className="mb-4 shrink-0 text-lg font-semibold text-white sm:text-xl">
+                Description
+              </h2>
+              <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pr-1">
+                <div className="space-y-3 break-words text-sm leading-6 text-white/85 sm:text-base">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
