@@ -10,6 +10,34 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 const PAGE_SIZE = 20;
+const MANUFACTURER_TABS_PER_ROW = 10;
+
+/** PostgREST returns at most 1000 rows per request; paginate to load all ids. */
+const PRODUCT_ID_BATCH = 1000;
+
+async function fetchAllProductIds(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+): Promise<{ data: { id: string }[] | null; error: { message: string } | null }> {
+  const ids: { id: string }[] = [];
+  let from = 0;
+  for (;;) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id')
+      .order('id', { ascending: true })
+      .range(from, from + PRODUCT_ID_BATCH - 1);
+    if (error) {
+      return { data: null, error };
+    }
+    const batch = data ?? [];
+    ids.push(...batch);
+    if (batch.length < PRODUCT_ID_BATCH) {
+      break;
+    }
+    from += PRODUCT_ID_BATCH;
+  }
+  return { data: ids, error: null };
+}
 
 /** Prefix segment before the first hyphen in product ids (e.g. "BE-0000" → "BE"). */
 function manufacturerPrefixFromProductId(id: string): string | null {
@@ -24,6 +52,16 @@ function distinctSortedPrefixes(rows: { id: string }[]): string[] {
     if (p) seen.add(p);
   }
   return Array.from(seen).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+}
+
+
+
+function chunkIntoRows<T>(items: T[], perRow: number): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < items.length; i += perRow) {
+    rows.push(items.slice(i, i + perRow));
+  }
+  return rows;
 }
 
 type Product = {
@@ -63,9 +101,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
   const supabase = await createSupabaseServerClient();
 
-  const { data: idRows, error: idError } = await supabase
-    .from('products')
-    .select('id');
+  const { data: idRows, error: idError } = await fetchAllProductIds(supabase);
 
   if (idError) {
     console.error('Error loading product ids for manufacturers:', idError.message);
@@ -73,9 +109,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
   }
 
   const manufacturerPrefixes = distinctSortedPrefixes(idRows ?? []);
-  const manufacturerRowStyle = {
-    width: `${manufacturerPrefixes.length * 10}%`,
-  };
+  const manufacturerRows = chunkIntoRows(manufacturerPrefixes, MANUFACTURER_TABS_PER_ROW);
 
   const selectedPrefix =
     manufacturerPrefixes.length === 0
@@ -146,35 +180,44 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
         {manufacturerPrefixes.length > 0 && (
           <div
-            className="mb-6 w-full max-w-screen-2xl overflow-x-auto"
+            className="mb-6 flex w-full max-w-screen-2xl flex-col items-center gap-2"
             role="list"
             aria-label="Manufacturers"
           >
-            <div
-              className="flex flex-nowrap divide-x divide-gray-200 rounded-lg border border-white/25 bg-white/95 shadow-md"
-              style={manufacturerRowStyle}
-            >
-            {manufacturerPrefixes.map((prefix) => {
-              const isSelected = prefix === selectedPrefix;
-              return (
-                <Link
-                  key={prefix}
-                  href={buildShopUrl({ prefix, page: 1 })}
-                  role="listitem"
-                  scroll={false}
-                  className={`flex min-w-0 flex-1 items-center justify-center px-2 py-3 text-center transition-colors ${
-                    isSelected
-                      ? 'bg-pink-100 text-pink-900'
-                      : 'bg-transparent text-gray-900 hover:bg-gray-50'
-                  }`}
+            {manufacturerRows.map((rowPrefixes, rowIndex) => (
+              <div
+                key={rowIndex}
+                className="flex w-full justify-center overflow-x-auto"
+              >
+                <div
+                  className="inline-grid shrink-0 divide-x divide-gray-200 rounded-lg border border-white/25 bg-white/95 shadow-md"
+                  style={{
+                    gridTemplateColumns: `repeat(${rowPrefixes.length}, minmax(4rem, max-content))`,
+                  }}
                 >
-                  <span className="text-sm font-semibold tracking-wide sm:text-base">
-                    {prefix}
-                  </span>
-                </Link>
-              );
-            })}
-            </div>
+                {rowPrefixes.map((prefix) => {
+                  const isSelected = prefix === selectedPrefix;
+                  return (
+                    <Link
+                      key={prefix}
+                      href={buildShopUrl({ prefix, page: 1 })}
+                      role="listitem"
+                      scroll={false}
+                      className={`flex min-w-0 items-center justify-center px-1 py-3 text-center transition-colors sm:px-2 ${
+                        isSelected
+                          ? 'bg-pink-100 text-pink-900'
+                          : 'bg-transparent text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="truncate text-xs font-semibold tracking-wide sm:text-sm md:text-base">
+                        {prefix}
+                      </span>
+                    </Link>
+                  );
+                })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
