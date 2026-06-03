@@ -139,7 +139,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: orderItemsError.message }, { status: 500 });
   }
 
-  await sendEmail(user.email, 'Order Confirmation', `Thank you for your order! Your order has been placed and will be processed shortly. Your order number is ${order.id}.`);
+  console.log(`API KEY EXISTS: ${!!process.env.RESEND_API_KEY}`);
+  const emailResponse = await sendEmail(user.email, 'Order Confirmation', `Thank you for your order! Your order has been placed and will be processed shortly. Your order number is ${order.id}.`);
+  console.log(emailResponse);
+  console.log(emailResponse.error);
+  if (emailResponse.error) {
+    return NextResponse.json({ error: emailResponse.error.message }, { status: 500 });
+  }
 
   return NextResponse.json({ order });
 }
