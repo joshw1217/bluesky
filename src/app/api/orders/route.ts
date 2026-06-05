@@ -17,6 +17,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function getUserName(userMetadata: Record<string, unknown>, fallback?: string) {
+  return typeof userMetadata.name === 'string' && userMetadata.name.trim()
+    ? userMetadata.name.trim()
+    : fallback;
+}
+
 function parseCheckoutItems(value: unknown): CheckoutItem[] | null {
   if (!Array.isArray(value)) {
     return null;
@@ -139,10 +145,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: orderItemsError.message }, { status: 500 });
   }
 
-  console.log(`API KEY EXISTS: ${!!process.env.RESEND_API_KEY}`);
-  const emailResponse = await sendEmail(user.email, 'Order Confirmation', `Thank you for your order! Your order has been placed and will be processed shortly. Your order number is ${order.id}.`);
-  console.log(emailResponse);
-  console.log(emailResponse.error);
+  console.log(user.email, orderItems);
+  const emailResponse = await sendEmail(user.email, 'Order Confirmation', undefined, orderItems, {
+    userName: getUserName(user.user_metadata, user.email),
+    orderId: order.id,
+    orderDate: new Date(),
+  });
+
   if (emailResponse.error) {
     return NextResponse.json({ error: emailResponse.error.message }, { status: 500 });
   }
