@@ -85,8 +85,8 @@ const sendEmail = async (
   orderDetails: OrderEmailDetails = {},
 ) => {
   const response = await resend.emails.send({
-    from: 'onboarding@resend.dev',
-    to: to ?? 'joshgwilson1227@gmail.com',
+    from: 'orders@blueskypetsupply.com',
+    to: to ?? 'joshgwilson1227@gmail.com', //placeholder, change to blue sky email
     subject: subject ?? 'Order Confirmation',
     html: html ?? buildOrderEmailHtml(orderItems, orderDetails),
   });
